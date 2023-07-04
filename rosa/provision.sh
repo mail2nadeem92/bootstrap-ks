@@ -144,6 +144,7 @@ jq --arg aws_account_id "${aws_account_id}" '. + {AWS_ACCOUNT_ID: $aws_account_i
 #-----PROVISION CLUSTER AND WATCH LOGS-----#
 printf "${BLUE}Provisioning the ROSA cluster ${RESOURCE_NAME} in ${AWS_REGION}.${CLEAR}\n"
 printf "${YELLOW}"
+${ROSA} create account-roles --mode auto
 ${ROSA} create cluster \
     --cluster-name=${RESOURCE_NAME} \
     --region=${AWS_REGION} \
@@ -151,6 +152,7 @@ ${ROSA} create cluster \
     --compute-machine-type=${AWS_WORKER_TYPE} \
     --compute-nodes=${AWS_WORKER_COUNT} \
     --channel-group=${CHANNEL_GROUP} \
+    --sts --mode auto \
     --multi-az \
     --watch \
     --yes
