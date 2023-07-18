@@ -160,7 +160,7 @@ printf "${CLEAR}"
 
 #-----EXTRACT DETAILS-----#
 # The API url may not ready in the cluster info , need a for loop here to wait for the API URL ready
-TIMEOUT=${TIMEOUT:-"600"}
+TIMEOUT=${TIMEOUT:-"1200"}
 printf "${BLUE}Polling for $TIMEOUT seconds for the ${RESOURCE_NAME} cluster to be ready.${CLEAR}\n"
 acc=0
 while ! (${ROSA} describe cluster --cluster=${RESOURCE_NAME} -o json | jq -er .api.url)
