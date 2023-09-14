@@ -62,6 +62,8 @@ AWS_WORKER_COUNT=${AWS_WORKER_COUNT:-"3"}
 # Default to "stable"
 CHANNEL_GROUP=${CHANNEL_GROUP:-"stable"}
 
+# Default to false
+ROSA_STS=${ROSA_STS:-"false"}
 
 #----VALIDATE ENV VARS----#
 # Validate that we have all required env vars and exit with a failure if any are missing
@@ -100,7 +102,14 @@ STATE_FILE=$PWD/${RESOURCE_NAME}.json
 #----LOG IN----#
 printf "${BLUE}Logging in to the 'rosa' cli.${CLEAR}\n"
 printf "${YELLOW}"
-${ROSA} login --token=${ROSA_TOKEN}
+if (OCP_VERSION && OCP_VERSION.startsWith("4.14")) {
+    // Version is not null or empty and starts with 4.14
+    ${ROSA} login --token=${ROSA_TOKEN} --env staging
+    CHANNEL_GROUP="candidate"
+
+} else {
+    ${ROSA} login --token=${ROSA_TOKEN}
+}
 printf "${CLEAR}"
 
 
@@ -144,18 +153,30 @@ jq --arg aws_account_id "${aws_account_id}" '. + {AWS_ACCOUNT_ID: $aws_account_i
 #-----PROVISION CLUSTER AND WATCH LOGS-----#
 printf "${BLUE}Provisioning the ROSA cluster ${RESOURCE_NAME} in ${AWS_REGION}.${CLEAR}\n"
 printf "${YELLOW}"
-${ROSA} create account-roles --mode auto
-${ROSA} create cluster \
+
+
+# Define the ROSA create command
+rosa_create="${ROSA} create cluster \
     --cluster-name=${RESOURCE_NAME} \
     --region=${AWS_REGION} \
     --version=${OCP_VERSION} \
     --compute-machine-type=${AWS_WORKER_TYPE} \
     --compute-nodes=${AWS_WORKER_COUNT} \
     --channel-group=${CHANNEL_GROUP} \
-    --sts --mode auto \
     --multi-az \
     --watch \
-    --yes
+    --yes"
+
+# Check if ROSA-STS is true
+if [ "$ROSA_STS" = true ]; then
+    ${ROSA} create account-roles --mode auto
+    # Modify the main command to add the additional flags
+    rosa_create="${rosa_create} --sts --mode auto"
+fi
+
+# Execute the ROSA create command
+echo "Executing command: ${rosa_create}"
+eval "${rosa_create}"
 printf "${CLEAR}"
 
 #-----EXTRACT DETAILS-----#
