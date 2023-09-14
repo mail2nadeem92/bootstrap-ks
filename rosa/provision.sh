@@ -102,14 +102,14 @@ STATE_FILE=$PWD/${RESOURCE_NAME}.json
 #----LOG IN----#
 printf "${BLUE}Logging in to the 'rosa' cli.${CLEAR}\n"
 printf "${YELLOW}"
-if (OCP_VERSION && OCP_VERSION.startsWith("4.14")) {
-    // Version is not null or empty and starts with 4.14
+
+if [[ -n "${OCP_VERSION}" && "${OCP_VERSION}" == 4.14* ]]; then
+    # Version is not null or empty and starts with 4.14
     ${ROSA} login --token=${ROSA_TOKEN} --env staging
     CHANNEL_GROUP="candidate"
-
-} else {
+else
     ${ROSA} login --token=${ROSA_TOKEN}
-}
+fi
 printf "${CLEAR}"
 
 
