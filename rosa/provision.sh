@@ -170,8 +170,12 @@ rosa_create="${ROSA} create cluster \
 # Check if ROSA-STS is true
 if [ "$ROSA_STS" = true ]; then
     ${ROSA} create account-roles --mode auto -y
+    installer_role_arn="arn:aws:iam::${aws_account_id}:role/ManagedOpenShift-Installer-Role"
+    control_role_arn="arn:aws:iam::${aws_account_id}:role/ManagedOpenShift-ControlPlane-Role"
+    support_role_arn="arn:aws:iam::${aws_account_id}:role/ManagedOpenShift-Support-Role"
+    worker_role_arn="arn:aws:iam::${aws_account_id}:role/ManagedOpenShift-Worker-Role"
     # Modify the main command to add the additional flags
-    rosa_create="${rosa_create} --sts --mode auto"
+    rosa_create="${rosa_create} --sts --mode auto --role-arn ${installer_role_arn} --support-role-arn ${support_role_arn} --controlplane-iam-role ${control_role_arn} --worker-iam-role ${worker_role_arn}"
 fi
 
 # Execute the ROSA create command
