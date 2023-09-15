@@ -80,7 +80,7 @@ fi
 #----LOG IN----#
 printf "${BLUE}Logging in to the 'rosa' cli.${CLEAR}\n"
 printf "${YELLOW}"
-${ROSA} login --token=${ROSA_TOKEN}  --env staging
+${ROSA} login --token=${ROSA_TOKEN}
 printf "${CLEAR}"
 
 
