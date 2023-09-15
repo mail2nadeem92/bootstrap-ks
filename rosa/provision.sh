@@ -169,7 +169,7 @@ rosa_create="${ROSA} create cluster \
 
 # Check if ROSA-STS is true
 if [ "$ROSA_STS" = true ]; then
-    ${ROSA} create account-roles --mode auto
+    #${ROSA} create account-roles --mode auto
     # Modify the main command to add the additional flags
     rosa_create="${rosa_create} --sts --mode auto"
 fi
