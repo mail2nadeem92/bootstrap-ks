@@ -19,7 +19,7 @@ fi
 export LC_ALL=C
 
 # Ensure we fail out if something goes wrong
-set -e
+set -ex
 
 # Check for vendored or global 'rosa' cli
 if [[ $(which rosa) ]]; then
